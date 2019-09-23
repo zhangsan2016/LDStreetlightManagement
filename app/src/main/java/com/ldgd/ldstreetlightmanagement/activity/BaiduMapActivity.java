@@ -11,12 +11,16 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
+import com.google.gson.Gson;
 import com.ldgd.ldstreetlightmanagement.R;
 import com.ldgd.ldstreetlightmanagement.base.BaseActivity;
 import com.ldgd.ldstreetlightmanagement.entity.LoginJson;
+import com.ldgd.ldstreetlightmanagement.entity.ProjectJson;
 import com.ldgd.ldstreetlightmanagement.util.HttpConfiguration;
 import com.ldgd.ldstreetlightmanagement.util.HttpUtil;
 import com.ldgd.ldstreetlightmanagement.util.LogUtil;
@@ -25,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -45,7 +50,9 @@ public class BaiduMapActivity extends BaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // 隐藏顶部的状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_baidu_map);
+
 
         // 获取传递过来的参数
         getData();
@@ -55,9 +62,6 @@ public class BaiduMapActivity extends BaseActivity {
 
         // 获取项目信息
         getProject();
-
-        // 初始化覆盖物位置
-        initOverlay();
 
 
     }
@@ -131,33 +135,106 @@ public class BaiduMapActivity extends BaseActivity {
 
     /**
      * 添加覆盖物
+     *
+     * @param projectList
      */
-    public void initOverlay() {
-
-        // add marker overlay
-        LatLng llA = new LatLng(39.963175, 116.400244);
-        LatLng llB = new LatLng(39.942821, 116.369199);
-        LatLng llC = new LatLng(39.939723, 116.425541);
-        LatLng llD = new LatLng(39.906965, 116.401394);
+    public void initOverlay(List<ProjectJson.DataBeanX.ProjectInfo> projectList) {
 
 
-        View markerView = View.inflate(this, R.layout.map_marker_item, null);
-        TextView cameraName = markerView.findViewById(R.id.camera_name);
-        cameraName.setText("skdhfjsdlf");
-        BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for (ProjectJson.DataBeanX.ProjectInfo projectInfo : projectList) {
+            // add marker overlay
+            LatLng ll = new LatLng(Double.parseDouble(projectInfo.getLat()),Double.parseDouble(projectInfo.getLng()));
+
+            View markerView = View.inflate(this, R.layout.map_marker_item, null);
+            TextView cameraName = markerView.findViewById(R.id.camera_name);
+            cameraName.setText(projectInfo.getTitle());
+            BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
+
+            MarkerOptions ooA = new MarkerOptions().position(ll).icon(bdA).zIndex(9).draggable(true);
+            mBaiduMap.addOverlay(ooA);
+
+            builder.include(ll);
+
+        /*    LatLng llA = new LatLng(39.963175, 116.400244);
+            LatLng llB = new LatLng(39.942821, 116.369199);
+            LatLng llC = new LatLng(39.939723, 116.425541);
+            LatLng llD = new LatLng(39.906965, 116.401394);
 
 
-        MarkerOptions ooA = new MarkerOptions().position(llA).icon(bdA).zIndex(9).draggable(true);
-        MarkerOptions ooB = new MarkerOptions().position(llB).icon(bdA).zIndex(9).draggable(true);
-        MarkerOptions ooC = new MarkerOptions().position(llC).icon(bdA).zIndex(9).draggable(true);
-        MarkerOptions ooD = new MarkerOptions().position(llD).icon(bdA).zIndex(9).draggable(true);
-        mBaiduMap.addOverlay(ooA);
-        mBaiduMap.addOverlay(ooB);
-        mBaiduMap.addOverlay(ooC);
-        mBaiduMap.addOverlay(ooD);
+            View markerView = View.inflate(this, R.layout.map_marker_item, null);
+            TextView cameraName = markerView.findViewById(R.id.camera_name);
+            cameraName.setText("skdhfjsdlf");
+            BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
+
+
+            MarkerOptions ooA = new MarkerOptions().position(llA).icon(bdA).zIndex(9).draggable(true);
+            MarkerOptions ooB = new MarkerOptions().position(llB).icon(bdA).zIndex(9).draggable(true);
+            MarkerOptions ooC = new MarkerOptions().position(llC).icon(bdA).zIndex(9).draggable(true);
+            MarkerOptions ooD = new MarkerOptions().position(llD).icon(bdA).zIndex(9).draggable(true);
+            mBaiduMap.addOverlay(ooA);
+            mBaiduMap.addOverlay(ooB);
+            mBaiduMap.addOverlay(ooC);
+            mBaiduMap.addOverlay(ooD);*/
+        }
+        try {
+            LatLngBounds bounds = builder.build();
+            /*MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(bounds.getCenter()); // 设置显示在屏幕中的地图地理范围
+            mBaiduMap.animateMapStatus(u);*/
+            // 设置显示在屏幕中的地图地理范围
+            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
+            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(5));
+        } catch (Exception e) {
+            System.out.println("空指针异常： ");
+        }
+
 
     }
 
+
+    /**
+     * 获取项目列表
+     */
+    public void getProject() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                String url = HttpConfiguration.PROJECT_LIST_URL;
+
+                HttpUtil.sendHttpRequest(url, new Callback() {
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        LogUtil.e("xxx" + "失败" + e.toString());
+                        showToast("连接服务器异常！");
+                        stopProgress();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        String json = response.body().string();
+                        LogUtil.e("xxx" + "成功" + json);
+
+                        // 解析返回过来的json
+                        Gson gson = new Gson();
+                        ProjectJson project = gson.fromJson(json, ProjectJson.class);
+                        List<ProjectJson.DataBeanX.ProjectInfo> projectList = project.getData().getData();
+
+                        // 初始化覆盖物位置
+                        initOverlay(projectList);
+
+
+                    }
+                }, loginJson.getData().getToken().getToken());
+
+
+            }
+        }).start();
+    }
 
     @Override
     protected void onResume() {
@@ -187,39 +264,5 @@ public class BaiduMapActivity extends BaseActivity {
         System.out.println("BaiduMapActivity json = " + reString);*/
     }
 
-    /**
-     * 获取项目列表
-     */
-    public void getProject() {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                String url = HttpConfiguration.PROJECT_LIST_URL;
-
-                HttpUtil.sendHttpRequest(url, new Callback() {
-
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        LogUtil.e("xxx" + "失败" + e.toString());
-                        showToast("连接服务器异常！");
-                        stopProgress();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-
-                        String json = response.body().string();
-                        LogUtil.e("xxx" + "成功" + json);
-
-                    }
-                }, loginJson.getData().getToken().getToken());
-
-
-            }
-        }).start();
-
-
-    }
 }

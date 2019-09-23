@@ -52,7 +52,7 @@
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="请输入百度开放平台申请的Android端API KEY" />
+            android:value="Uh4wOmEnjH1HCKQDxtB7OR29GguAZebY" />
 
         <meta-data android:name="android.max_aspect"
                    android:value="2.1"/>

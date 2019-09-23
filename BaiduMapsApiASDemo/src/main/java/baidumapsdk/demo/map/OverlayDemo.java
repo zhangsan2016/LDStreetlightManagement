@@ -140,6 +140,20 @@ public class OverlayDemo extends Activity {
         LatLng llB = new LatLng(39.942821, 116.369199);
         LatLng llC = new LatLng(39.939723, 116.425541);
         LatLng llD = new LatLng(39.906965, 116.401394);
+        LatLng llE = new LatLng(22.635131, 114.003727);
+
+      /*  LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(llA);
+        builder.include(llB);
+        builder.include(llC);
+        builder.include(llD);
+        builder.include(llE);
+        LatLngBounds bounds = builder.build();
+        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(bounds); // 设置显示在屏幕中的地图地理范围
+        mBaiduMap.animateMapStatus(u);*/
+
+        MarkerOptions ooE = new MarkerOptions().position(llE).icon(bdB).zIndex(5);
+        mBaiduMap.addOverlay(ooE);
 
         MarkerOptions ooA = new MarkerOptions().position(llA).icon(bdA).zIndex(9).draggable(true);
         if (animationBox.isChecked()) {
@@ -156,12 +170,12 @@ public class OverlayDemo extends Activity {
         mMarkerB = (Marker) (mBaiduMap.addOverlay(ooB));
 
         MarkerOptions ooC = new MarkerOptions()
-            .position(llC)
-            .icon(bdC)
-            .perspective(false)
-            .anchor(0.5f, 0.5f)
-            .rotate(30)
-            .zIndex(7);
+                .position(llC)
+                .icon(bdC)
+                .perspective(false)
+                .anchor(0.5f, 0.5f)
+                .rotate(30)
+                .zIndex(7);
         if (animationBox.isChecked()) {
             // 生长动画
             ooC.animateType(MarkerAnimateType.grow);
@@ -185,9 +199,9 @@ public class OverlayDemo extends Activity {
         LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
 
         OverlayOptions ooGround = new GroundOverlayOptions()
-            .positionFromBounds(bounds)
-            .image(bdGround)
-            .transparency(0.8f);
+                .positionFromBounds(bounds)
+                .image(bdGround)
+                .transparency(0.8f);
         mBaiduMap.addOverlay(ooGround);
 
         MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(bounds.getCenter());
@@ -208,6 +222,8 @@ public class OverlayDemo extends Activity {
             public void onMarkerDragStart(Marker marker) {
             }
         });
+
+
     }
 
     /**
@@ -285,7 +301,7 @@ public class OverlayDemo extends Activity {
         // MapView的生命周期与Activity同步，当activity销毁时需调用MapView.destroy()
         mMapView.onDestroy();
         super.onDestroy();
-        
+
         // 回收 bitmap 资源
         bdA.recycle();
         bdB.recycle();

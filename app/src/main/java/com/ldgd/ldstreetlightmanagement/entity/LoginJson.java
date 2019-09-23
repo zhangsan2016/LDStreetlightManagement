@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by ldgd on 2019/9/22.
  * 功能：
- * 说明：
+ * 说明：登录成功返回的json
  */
 
 public class LoginJson implements Serializable {

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by ldgd on 2019/9/23.
  * 功能：
- * 说明：项目寄送信息
+ * 说明：
  */
 
 public class ProjectJson {
@@ -58,7 +58,7 @@ public class ProjectJson {
         private int totalPages;
         private int pageSize;
         private int currentPage;
-        private List<DataBean> data;
+        private List<ProjectInfo> data;
 
         public int getCount() {
             return count;
@@ -92,15 +92,15 @@ public class ProjectJson {
             this.currentPage = currentPage;
         }
 
-        public List<DataBean> getData() {
+        public List<ProjectInfo> getData() {
             return data;
         }
 
-        public void setData(List<DataBean> data) {
+        public void setData(List<ProjectInfo> data) {
             this.data = data;
         }
 
-        public static class DataBean {
+        public static class ProjectInfo {
             /**
              * _id : 40
              * title : 中科洛丁展示项目/重庆展厅
