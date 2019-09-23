@@ -3,7 +3,6 @@ package com.ldgd.ldstreetlightmanagement.activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,18 +14,27 @@ import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.google.gson.Gson;
 import com.ldgd.ldstreetlightmanagement.R;
+import com.ldgd.ldstreetlightmanagement.base.BaseActivity;
 import com.ldgd.ldstreetlightmanagement.entity.LoginJson;
+import com.ldgd.ldstreetlightmanagement.util.HttpConfiguration;
+import com.ldgd.ldstreetlightmanagement.util.HttpUtil;
+import com.ldgd.ldstreetlightmanagement.util.LogUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BaiduMapActivity extends AppCompatActivity {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+public class BaiduMapActivity extends BaseActivity {
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
+    // 登录返回的参数
+    private LoginJson loginJson;
 
 
     @Override
@@ -44,6 +52,9 @@ public class BaiduMapActivity extends AppCompatActivity {
 
         // 初始化百度地图
         initBaiduMap();
+
+        // 获取项目信息
+        getProject();
 
         // 初始化覆盖物位置
         initOverlay();
@@ -170,9 +181,45 @@ public class BaiduMapActivity extends AppCompatActivity {
     }
 
     public void getData() {
-        LoginJson loginJson = (LoginJson) getIntent().getSerializableExtra("loginInfo");
-        Gson gson = new Gson();
+        loginJson = (LoginJson) getIntent().getSerializableExtra("loginInfo");
+   /*     Gson gson = new Gson();
         String reString = gson.toJson(loginJson);
-        System.out.println("BaiduMapActivity json = " + reString);
+        System.out.println("BaiduMapActivity json = " + reString);*/
+    }
+
+    /**
+     * 获取项目列表
+     */
+    public void getProject() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                String url = HttpConfiguration.PROJECT_LIST_URL;
+
+                HttpUtil.sendHttpRequest(url, new Callback() {
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        LogUtil.e("xxx" + "失败" + e.toString());
+                        showToast("连接服务器异常！");
+                        stopProgress();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        String json = response.body().string();
+                        LogUtil.e("xxx" + "成功" + json);
+
+                    }
+                }, loginJson.getData().getToken().getToken());
+
+
+            }
+        }).start();
+
+
     }
 }

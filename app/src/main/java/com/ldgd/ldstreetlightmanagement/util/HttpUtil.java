@@ -160,7 +160,7 @@ public class HttpUtil {
      * @param requestBody
      * @param token
      */
-    public static void sendHttpRequest(final String address, final okhttp3.Callback callback, final RequestBody requestBody, final String token) {
+    public static void sendHttpRequest(final String address, final okhttp3.Callback callback, final String token) {
 
         new Thread(new Runnable() {
             @Override
@@ -173,7 +173,7 @@ public class HttpUtil {
                         .addHeader("X-auth-token", token)
                         .header("Accept-Encoding", "deflate")
                         .addHeader("content-type", "application/json")
-                        .url(address).post(requestBody).build();
+                        .url(address).build();
                 client.newCall(request).enqueue(callback);
 
             }
