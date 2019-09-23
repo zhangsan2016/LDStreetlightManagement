@@ -157,26 +157,7 @@ public class BaiduMapActivity extends BaseActivity {
 
             builder.include(ll);
 
-        /*    LatLng llA = new LatLng(39.963175, 116.400244);
-            LatLng llB = new LatLng(39.942821, 116.369199);
-            LatLng llC = new LatLng(39.939723, 116.425541);
-            LatLng llD = new LatLng(39.906965, 116.401394);
 
-
-            View markerView = View.inflate(this, R.layout.map_marker_item, null);
-            TextView cameraName = markerView.findViewById(R.id.camera_name);
-            cameraName.setText("skdhfjsdlf");
-            BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
-
-
-            MarkerOptions ooA = new MarkerOptions().position(llA).icon(bdA).zIndex(9).draggable(true);
-            MarkerOptions ooB = new MarkerOptions().position(llB).icon(bdA).zIndex(9).draggable(true);
-            MarkerOptions ooC = new MarkerOptions().position(llC).icon(bdA).zIndex(9).draggable(true);
-            MarkerOptions ooD = new MarkerOptions().position(llD).icon(bdA).zIndex(9).draggable(true);
-            mBaiduMap.addOverlay(ooA);
-            mBaiduMap.addOverlay(ooB);
-            mBaiduMap.addOverlay(ooC);
-            mBaiduMap.addOverlay(ooD);*/
         }
         try {
             LatLngBounds bounds = builder.build();
