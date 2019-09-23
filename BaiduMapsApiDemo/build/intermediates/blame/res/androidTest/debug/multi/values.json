@@ -1,0 +1,26 @@
+[
+    {
+        "outputFile": "I:\\Programming information\\temporary project\\checkProject\\LDStreetlightManagement\\BaiduMapsApiDemo\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 45,
+                    "endOffset": 96
+                },
+                "from": {
+                    "file": "C:\\Users\\ldgd\\.android\\build-cache\\b52d3df892e7c28e7f8343c394d4965aa066cc41\\output\\res\\values\\values.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 229,
+                        "endColumn": 45,
+                        "endOffset": 270
+                    }
+                }
+            }
+        ]
+    }
+]

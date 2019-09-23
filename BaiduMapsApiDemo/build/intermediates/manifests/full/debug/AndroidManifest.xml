@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="baidumapsdk.demo"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="26" />
+
+    <!-- <uses-sdk -->
+    <!-- android:minSdkVersion="7" -->
+    <!-- android:targetSdkVersion="10" /> -->
+
+
+    <!-- OpenGLES 2.0 -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <!-- 访问网络，进行地图相关业务数据请求，包括地图数据，路线规划，POI检索等 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 获取网络状态，根据网络状态切换进行数据请求网络转换 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 读取外置存储。如果开发者使用了So动态加载功能并且把SO文件放在了外置存储区域，则需要申请该权限，否则不需要 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 写外置存储。如果开发者使用了离线地图，并且数据写在外置存储区域，则需要申请该权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- 以下两个权限用于Demo中定位功能展示，如果开发者实际不需要百度定位功能，可不申请 -->
+    <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- 调用相机，用于实现扫描二维码，预览个性化地图编辑器生成的个性化地图样式，开发者实际开发中地图SDK不需要该权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="false"
+        android:resizeable="true"
+        android:smallScreens="true" />
+
+    <!-- 用于实现扫描二维码，预览个性化地图编辑器生成的个性化地图样式（开发者实际开发中地图SDK不需要该权限） -->
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <meta-data
+        android:name="android.support.VERSION"
+        android:value="26.0.0-alpha1" />
+
+    <application
+        android:name="baidumapsdk.demo.DemoApplication"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="" />
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
+        <activity
+            android:name="baidumapsdk.demo.BMapApiDemoMain"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="BaiduMapSDKDemo"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.BaseMapDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_basemap"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.MapFragmentDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_map_fragment"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.MultiMapViewDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_multimap"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.GeometryDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_geometry"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.FavoriteDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_favorite"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.LocationDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_location"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.MapControlDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_control"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.UISettingDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_ui"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.LayersDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_layers"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.OverlayDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_overlay"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.MarkerAnimationDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_marker_animation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.OfflineDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_offline"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.PoiSearchDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_poi"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.RoutePlanDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_route"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.GeoCoderDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_geocode"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.BusLineSearchDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_bus"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.HeatMapDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_heatmap"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.ShareDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_share"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.ShareDemoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_share"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.util.OpenBaiduMap"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_open_baidumap"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.cloud.CloudSearchActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_cloud"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.cloud.CloudSearchDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_cloud_search_demo"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.OpenglDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_opengl"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.TextureMapViewDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_desc_texturemapview"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.TileOverlayDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_tileoverlay"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
+
+        <activity
+            android:name="baidumapsdk.demo.map.MarkerClusterDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_marker_cluster_demo"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.DistrictSearchDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_districsearch"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.IndoorMapDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_indoor"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.search.IndoorSearchDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_name_indoorsearch"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="baidumapsdk.demo.map.TrackShowDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/demo_track_show"
+            android:screenOrientation="portrait" >
+        </activity>
+    </application>
+
+</manifest>
