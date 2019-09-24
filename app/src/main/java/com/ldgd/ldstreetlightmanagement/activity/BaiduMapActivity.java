@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -42,10 +43,17 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class BaiduMapActivity extends BaseActivity {
+    // 层级，第一层级是项目，第二层级是路灯
+    private final static int HIERARCHY_PROJECT = 1;
+    private final static int HIERARCHY_DEVICE_LAMP = 2;
+
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
     // 登录返回的参数
     private LoginJson loginJson;
+
+    // 项目 层级的list
+    List<Marker> projectMarker = new ArrayList<>();
 
 
     @Override
@@ -97,6 +105,41 @@ public class BaiduMapActivity extends BaseActivity {
         mMapView = (MapView) findViewById(R.id.bmapView);
         mBaiduMap = mMapView.getMap();
 
+        // 设置覆盖物点击事件
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                ProjectJson.DataBeanX.ProjectInfo projectInfo = (ProjectJson.DataBeanX.ProjectInfo) marker.getExtraInfo().getSerializable("projectInfo");
+
+                if(projectInfo != null){
+                    LogUtil.e("xxx" + projectInfo.toString());
+                }else{
+                    InfoWindow mInfoWindow;
+                    LatLng position = marker.getPosition();
+                    final double latitude = position.latitude;
+                    final double longitude = position.longitude;
+                    // showToast("latitude" + latitude + "\n  " + "longitude" +
+                    // longitude );
+
+                    // 将marker所在的经纬度的信息转化成屏幕上的坐标
+                    Point p = mBaiduMap.getProjection().toScreenLocation(
+                            position);
+                    p.y -= 30;
+                    LatLng llInfo = mBaiduMap.getProjection()
+                            .fromScreenLocation(p);
+                    View location = View.inflate(BaiduMapActivity.this,
+                            R.layout.baidu_map_marker_info_item, null);
+                    mInfoWindow = new InfoWindow(location, llInfo, 0);
+                    // 显示InfoWindow
+                    mBaiduMap.showInfoWindow(mInfoWindow);
+                }
+
+
+                return false;
+            }
+        });
+
 
     }
 
@@ -139,72 +182,49 @@ public class BaiduMapActivity extends BaseActivity {
         MapView.setCustomMapStylePath(moduleName + "/" + fileName);
     }
 
+
     /**
      * 添加覆盖物
      *
-     * @param projectList
+     * @param projectList 项目信息列表
+     * @param hierarchy   层级 ：项目 - 路灯
      */
-    public void initOverlay(List<ProjectJson.DataBeanX.ProjectInfo> projectList) {
+    public void initOverlay(List<ProjectJson.DataBeanX.ProjectInfo> projectList, int hierarchy) {
 
+        if (hierarchy == HIERARCHY_PROJECT) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (ProjectJson.DataBeanX.ProjectInfo projectInfo : projectList) {
+                // add marker overlay
+                LatLng ll = new LatLng(Double.parseDouble(projectInfo.getLat()), Double.parseDouble(projectInfo.getLng()));
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                View markerView = View.inflate(this, R.layout.map_marker_item, null);
+                TextView cameraName = markerView.findViewById(R.id.camera_name);
+                cameraName.setText(projectInfo.getTitle());
+                BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
 
-        for (ProjectJson.DataBeanX.ProjectInfo projectInfo : projectList) {
-            // add marker overlay
-            LatLng ll = new LatLng(Double.parseDouble(projectInfo.getLat()), Double.parseDouble(projectInfo.getLng()));
+                MarkerOptions ooA = new MarkerOptions().position(ll).icon(bdA).zIndex(9);
+                Marker mMarker = (Marker) mBaiduMap.addOverlay(ooA);
 
-            View markerView = View.inflate(this, R.layout.map_marker_item, null);
-            TextView cameraName = markerView.findViewById(R.id.camera_name);
-            cameraName.setText(projectInfo.getTitle());
-            BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
+                // 把项目信息 和 Marker 绑定
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("projectInfo", projectInfo);
+                mMarker.setExtraInfo(bundle);
 
-            MarkerOptions ooA = new MarkerOptions().position(ll).icon(bdA).zIndex(9).draggable(true);
-            mBaiduMap.addOverlay(ooA);
+                // 用于计算当前显示范围
+                builder.include(ll);
 
-            // 用于计算当前显示范围
-            builder.include(ll);
-
-
-        }
-        try {
-            LatLngBounds bounds = builder.build();
+            }
+            try {
+                LatLngBounds bounds = builder.build();
             /*MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(bounds.getCenter()); // 设置显示在屏幕中的地图地理范围
             mBaiduMap.animateMapStatus(u);*/
-            // 设置显示在屏幕中的地图地理范围
-            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
-            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(5));
-        } catch (Exception e) {
-            System.out.println("空指针异常： ");
-        }
-
-
-        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                LogUtil.e("xxxx"+ marker.getPosition());
-
-                InfoWindow mInfoWindow;
-                LatLng position = marker.getPosition();
-                final double latitude = position.latitude;
-                final double longitude = position.longitude;
-                // showToast("latitude" + latitude + "\n  " + "longitude" +
-                // longitude );
-
-                // 将marker所在的经纬度的信息转化成屏幕上的坐标
-                Point p = mBaiduMap.getProjection().toScreenLocation(
-                        position);
-                p.y -= 30;
-                LatLng llInfo = mBaiduMap.getProjection()
-                        .fromScreenLocation(p);
-                View location = View.inflate(BaiduMapActivity.this,
-                        R.layout.baidu_map_marker_info_item, null);
-                mInfoWindow = new InfoWindow(location, llInfo, 0);
-                // 显示InfoWindow
-                mBaiduMap.showInfoWindow(mInfoWindow);
-
-                return false;
+                // 设置显示在屏幕中的地图地理范围
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(5));
+            } catch (Exception e) {
+                System.out.println("空指针异常： ");
             }
-        });
+        }
 
 
     }
@@ -244,7 +264,7 @@ public class BaiduMapActivity extends BaseActivity {
                         List<ProjectJson.DataBeanX.ProjectInfo> projectList = project.getData().getData();
 
                         // 初始化覆盖物位置
-                        initOverlay(projectList);
+                        initOverlay(projectList, HIERARCHY_PROJECT);
 
                     }
                 }, token, contentType, null);
@@ -322,7 +342,7 @@ public class BaiduMapActivity extends BaseActivity {
                         List<ProjectJson.DataBeanX.ProjectInfo> projectList = project.getData().getData();
 
                         // 初始化覆盖物位置
-                        initOverlay(projectList);
+                        initOverlay(projectList, HIERARCHY_DEVICE_LAMP);
 
 
                     }

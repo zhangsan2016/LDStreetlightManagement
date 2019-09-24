@@ -1,5 +1,6 @@
 package com.ldgd.ldstreetlightmanagement.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -100,7 +101,7 @@ public class ProjectJson {
             this.data = data;
         }
 
-        public static class ProjectInfo {
+        public static class ProjectInfo implements Serializable {
             /**
              * _id : 40
              * title : 中科洛丁展示项目/重庆展厅
@@ -173,6 +174,19 @@ public class ProjectJson {
 
             public void setAdmin(String admin) {
                 this.admin = admin;
+            }
+
+            @Override
+            public String toString() {
+                return "ProjectInfo{" +
+                        "_id=" + _id +
+                        ", title='" + title + '\'' +
+                        ", lng='" + lng + '\'' +
+                        ", lat='" + lat + '\'' +
+                        ", smsphone='" + smsphone + '\'' +
+                        ", subgroups='" + subgroups + '\'' +
+                        ", admin='" + admin + '\'' +
+                        '}';
             }
         }
     }
