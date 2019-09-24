@@ -160,7 +160,7 @@ public class HttpUtil {
      * @param requestBody
      * @param token
      */
-    public static void sendHttpRequest(final String address, final okhttp3.Callback callback, final String token) {
+    public static void sendHttpRequest(final String address, final okhttp3.Callback callback, final String token, final String contentType, final RequestBody requestBody) {
 
         new Thread(new Runnable() {
             @Override
@@ -169,11 +169,21 @@ public class HttpUtil {
                         .connectTimeout(100, TimeUnit.SECONDS)//设置连接超时时间
                         .readTimeout(20, TimeUnit.SECONDS).build();//设置读取超时时间;
 
-                Request request = new Request.Builder()
-                        .addHeader("X-auth-token", token)
-                        .header("Accept-Encoding", "deflate")
-                        .addHeader("content-type", "application/json")
-                        .url(address).build();
+                Request request;
+                if(requestBody == null){
+                    request = new Request.Builder()
+                            .addHeader("X-auth-token", token)
+                            .header("Accept-Encoding", "deflate")
+                            .addHeader("content-type", contentType)
+                            .url(address).build();
+                }else{
+                     request = new Request.Builder()
+                            .addHeader("X-auth-token", token)
+                            .header("Accept-Encoding", "deflate")
+                            .addHeader("content-type", contentType)
+                            .post(requestBody)
+                            .url(address).build();
+                }
                 client.newCall(request).enqueue(callback);
 
             }

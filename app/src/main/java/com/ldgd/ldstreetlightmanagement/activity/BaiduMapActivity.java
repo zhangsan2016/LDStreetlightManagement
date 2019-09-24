@@ -2,6 +2,7 @@ package com.ldgd.ldstreetlightmanagement.activity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -11,8 +12,10 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
@@ -33,6 +36,9 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class BaiduMapActivity extends BaseActivity {
@@ -145,7 +151,7 @@ public class BaiduMapActivity extends BaseActivity {
 
         for (ProjectJson.DataBeanX.ProjectInfo projectInfo : projectList) {
             // add marker overlay
-            LatLng ll = new LatLng(Double.parseDouble(projectInfo.getLat()),Double.parseDouble(projectInfo.getLng()));
+            LatLng ll = new LatLng(Double.parseDouble(projectInfo.getLat()), Double.parseDouble(projectInfo.getLng()));
 
             View markerView = View.inflate(this, R.layout.map_marker_item, null);
             TextView cameraName = markerView.findViewById(R.id.camera_name);
@@ -155,6 +161,7 @@ public class BaiduMapActivity extends BaseActivity {
             MarkerOptions ooA = new MarkerOptions().position(ll).icon(bdA).zIndex(9).draggable(true);
             mBaiduMap.addOverlay(ooA);
 
+            // 用于计算当前显示范围
             builder.include(ll);
 
 
@@ -171,6 +178,35 @@ public class BaiduMapActivity extends BaseActivity {
         }
 
 
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                LogUtil.e("xxxx"+ marker.getPosition());
+
+                InfoWindow mInfoWindow;
+                LatLng position = marker.getPosition();
+                final double latitude = position.latitude;
+                final double longitude = position.longitude;
+                // showToast("latitude" + latitude + "\n  " + "longitude" +
+                // longitude );
+
+                // 将marker所在的经纬度的信息转化成屏幕上的坐标
+                Point p = mBaiduMap.getProjection().toScreenLocation(
+                        position);
+                p.y -= 30;
+                LatLng llInfo = mBaiduMap.getProjection()
+                        .fromScreenLocation(p);
+                View location = View.inflate(BaiduMapActivity.this,
+                        R.layout.baidu_map_marker_info_item, null);
+                mInfoWindow = new InfoWindow(location, llInfo, 0);
+                // 显示InfoWindow
+                mBaiduMap.showInfoWindow(mInfoWindow);
+
+                return false;
+            }
+        });
+
+
     }
 
 
@@ -184,6 +220,8 @@ public class BaiduMapActivity extends BaseActivity {
             public void run() {
 
                 String url = HttpConfiguration.PROJECT_LIST_URL;
+                String token = loginJson.getData().getToken().getToken();
+                String contentType = HttpConfiguration.CONTENT_TYPE_PROJECT_LIST;
 
                 HttpUtil.sendHttpRequest(url, new Callback() {
 
@@ -208,13 +246,13 @@ public class BaiduMapActivity extends BaseActivity {
                         // 初始化覆盖物位置
                         initOverlay(projectList);
 
-
                     }
-                }, loginJson.getData().getToken().getToken());
+                }, token, contentType, null);
 
 
             }
         }).start();
+
     }
 
     @Override
@@ -246,4 +284,52 @@ public class BaiduMapActivity extends BaseActivity {
     }
 
 
+    /**
+     * 获取设备下管理的所有路灯
+     */
+    public void getDeviceLampList() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                String url = HttpConfiguration.PROJECT_LIST_URL;
+                String token = loginJson.getData().getToken().getToken();
+                String contentType = HttpConfiguration.CONTENT_TYPE_DEVICE_LAMP_LIST;
+
+                // 创建请求的参数body
+                String postBody = "{\"where\":{\"PROJECT\":\"中科洛丁展示项目/深圳展厅\"},\"size\":5000}";
+                RequestBody body = FormBody.create(MediaType.parse("application/json"), postBody);
+
+                HttpUtil.sendHttpRequest(url, new Callback() {
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        LogUtil.e("xxx" + "失败" + e.toString());
+                        showToast("连接服务器异常！");
+                        stopProgress();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        String json = response.body().string();
+                        LogUtil.e("xxx" + "成功" + json);
+
+                        // 解析返回过来的json
+                        Gson gson = new Gson();
+                        ProjectJson project = gson.fromJson(json, ProjectJson.class);
+                        List<ProjectJson.DataBeanX.ProjectInfo> projectList = project.getData().getData();
+
+                        // 初始化覆盖物位置
+                        initOverlay(projectList);
+
+
+                    }
+                }, token, contentType, body);
+
+
+            }
+        }).start();
+    }
 }

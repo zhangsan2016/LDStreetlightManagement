@@ -3,6 +3,8 @@ package com.ldgd.ldstreetlightmanagement;
 import com.ldgd.ldstreetlightmanagement.util.HttpConfiguration;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -25,9 +27,56 @@ public class Check {
 
     public static void main(String[] args) {
 
-        sendHttp2();
+    //    sendHttp3();
 
 
+        // LatLng latLng = marker.getPosition();
+        String dizhi = "latitude: 22.635131, longitude: 114.003727";
+        Map<String,String> mapString = new HashMap<>();
+        mapString.put(dizhi,"zhangsan");
+
+        System.out.println("xxx" + mapString.get(dizhi));
+
+    }
+
+
+    public static void sendHttp3() {
+
+        //指定当前请求的 contentType 为 json 数据
+        MediaType JSON = MediaType.parse("application/json");
+        String postBody = "{\"where\":{\"PROJECT\":\"中科洛丁展示项目/深圳展厅\"},\"size\":5000}";
+
+        /**
+         * 创建请求的参数body
+         */
+     //   RequestBody body = FormBody.create(MediaType.parse("application/json"), postBody);
+
+        RequestBody body= new FormBody.Builder().build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(100, TimeUnit.SECONDS)//设置连接超时时间
+                .readTimeout(20, TimeUnit.SECONDS).build();//设置读取超时时间;
+
+        Request request = new Request.Builder()
+                .addHeader("X-auth-token", "1ccf8430-dd1e-11e9-8c76-0b68964d4fc9")
+                .header("Accept-Encoding", "deflate")
+                .addHeader("content-type", "application/json")
+                .url(HttpConfiguration.PROJECT_LIST_URL)
+             //   .post(body)// post json提交
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("失败 json = ");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                System.out.println("成功 json = " + json);
+            }
+
+        });
     }
 
 
@@ -35,7 +84,7 @@ public class Check {
 
         //指定当前请求的 contentType 为 json 数据
         MediaType JSON = MediaType.parse("application/json");
-        String postBody = "{\"where\":{\"PROJECT\":\"中科洛丁展示项目/重庆展厅\"},\"size\":5000}";
+        String postBody = "{\"where\":{\"PROJECT\":\"中科洛丁展示项目/深圳展厅\"},\"size\":5000}";
 
         /**
          * 创建请求的参数body
@@ -51,8 +100,8 @@ public class Check {
                 .addHeader("X-auth-token", "1ccf8430-dd1e-11e9-8c76-0b68964d4fc9")
                 .header("Accept-Encoding", "deflate")
                 .addHeader("content-type", "application/json")
-                .url(HttpConfiguration.URL_BASE + "project/list")
-           //     .post(body)// post json提交
+                .url(HttpConfiguration.DEVICE_LAMP_LIST_URL)
+                .post(body)// post json提交
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -85,7 +134,7 @@ public class Check {
         Request request = new Request.Builder()
                 .addHeader("X-auth-token", "1ccf8430-dd1e-11e9-8c76-0b68964d4fc9")
                 .header("Accept-Encoding", "deflate")
-                .url(HttpConfiguration.URL_BASE + "v_device_lamp/list").post(requestBody).build();
+                .url(HttpConfiguration.DEVICE_LAMP_LIST_URL).post(requestBody).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
