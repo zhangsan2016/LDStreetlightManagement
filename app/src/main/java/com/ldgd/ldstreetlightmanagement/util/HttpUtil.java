@@ -155,10 +155,11 @@ public class HttpUtil {
      *  API均需附带token
      *  token存放于http request header   X-auth-token中
      *  Content-type: application/json
-     * @param address
-     * @param callback
-     * @param requestBody
-     * @param token
+     * @param address  访问地址
+     * @param callback 回调函数
+     * @param token    token
+     * @param contentType  Content-type: application/json
+     * @param requestBody  请求的主体
      */
     public static void sendHttpRequest(final String address, final okhttp3.Callback callback, final String token, final String contentType, final RequestBody requestBody) {
 

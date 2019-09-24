@@ -3,8 +3,6 @@ package com.ldgd.ldstreetlightmanagement;
 import com.ldgd.ldstreetlightmanagement.util.HttpConfiguration;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -27,15 +25,10 @@ public class Check {
 
     public static void main(String[] args) {
 
-    //    sendHttp3();
+       sendHttp2();
 
 
-        // LatLng latLng = marker.getPosition();
-        String dizhi = "latitude: 22.635131, longitude: 114.003727";
-        Map<String,String> mapString = new HashMap<>();
-        mapString.put(dizhi,"zhangsan");
 
-        System.out.println("xxx" + mapString.get(dizhi));
 
     }
 
@@ -85,6 +78,7 @@ public class Check {
         //指定当前请求的 contentType 为 json 数据
         MediaType JSON = MediaType.parse("application/json");
         String postBody = "{\"where\":{\"PROJECT\":\"中科洛丁展示项目/深圳展厅\"},\"size\":5000}";
+
 
         /**
          * 创建请求的参数body

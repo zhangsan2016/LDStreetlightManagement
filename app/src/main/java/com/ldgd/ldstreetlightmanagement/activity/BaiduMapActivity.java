@@ -22,6 +22,7 @@ import com.baidu.mapapi.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.ldgd.ldstreetlightmanagement.R;
 import com.ldgd.ldstreetlightmanagement.base.BaseActivity;
+import com.ldgd.ldstreetlightmanagement.entity.DeviceLampJson;
 import com.ldgd.ldstreetlightmanagement.entity.LoginJson;
 import com.ldgd.ldstreetlightmanagement.entity.ProjectJson;
 import com.ldgd.ldstreetlightmanagement.util.HttpConfiguration;
@@ -32,7 +33,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -43,17 +43,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class BaiduMapActivity extends BaseActivity {
-    // 层级，第一层级是项目，第二层级是路灯
-    private final static int HIERARCHY_PROJECT = 1;
-    private final static int HIERARCHY_DEVICE_LAMP = 2;
 
     private MapView mMapView = null;
     private BaiduMap mBaiduMap;
     // 登录返回的参数
     private LoginJson loginJson;
-
-    // 项目 层级的list
-    List<Marker> projectMarker = new ArrayList<>();
 
 
     @Override
@@ -111,10 +105,15 @@ public class BaiduMapActivity extends BaseActivity {
             public boolean onMarkerClick(Marker marker) {
 
                 ProjectJson.DataBeanX.ProjectInfo projectInfo = (ProjectJson.DataBeanX.ProjectInfo) marker.getExtraInfo().getSerializable("projectInfo");
+                DeviceLampJson.DataBeanX.DeviceLamp deviceLamp = (DeviceLampJson.DataBeanX.DeviceLamp) marker.getExtraInfo().getSerializable("deviceLamp");
 
-                if(projectInfo != null){
+
+                if (projectInfo != null) {
                     LogUtil.e("xxx" + projectInfo.toString());
-                }else{
+                    // 获取当前项目下的所有路灯
+                    getDeviceLampList(projectInfo.getTitle());
+
+                } else if (deviceLamp != null) {
                     InfoWindow mInfoWindow;
                     LatLng position = marker.getPosition();
                     final double latitude = position.latitude;
@@ -186,12 +185,15 @@ public class BaiduMapActivity extends BaseActivity {
     /**
      * 添加覆盖物
      *
-     * @param projectList 项目信息列表
-     * @param hierarchy   层级 ：项目 - 路灯
+     * @param list 项目列表
+     *             层级 ：项目 - 路灯
      */
-    public void initOverlay(List<ProjectJson.DataBeanX.ProjectInfo> projectList, int hierarchy) {
+    public void initOverlay(List list) {
 
-        if (hierarchy == HIERARCHY_PROJECT) {
+        clearOverlay(null);
+
+        if (list.get(0) instanceof ProjectJson.DataBeanX.ProjectInfo) {
+            List<ProjectJson.DataBeanX.ProjectInfo> projectList = list;
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             for (ProjectJson.DataBeanX.ProjectInfo projectInfo : projectList) {
                 // add marker overlay
@@ -220,7 +222,50 @@ public class BaiduMapActivity extends BaseActivity {
             mBaiduMap.animateMapStatus(u);*/
                 // 设置显示在屏幕中的地图地理范围
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(5));
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(16));
+            } catch (Exception e) {
+                System.out.println("空指针异常： ");
+            }
+
+        } else if (list.get(0) instanceof DeviceLampJson.DataBeanX.DeviceLamp) {
+
+            List<DeviceLampJson.DataBeanX.DeviceLamp> deviceLamps = list;
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (DeviceLampJson.DataBeanX.DeviceLamp deviceLamp : deviceLamps) {
+
+                if (deviceLamp.getLAT().equals("") || deviceLamp.getLNG().equals("")) {
+                    return;
+                }
+
+                // add marker overlay
+                LatLng ll = new LatLng(Double.parseDouble(deviceLamp.getLAT()), Double.parseDouble(deviceLamp.getLNG()));
+
+                View markerView = View.inflate(this, R.layout.map_marker_item, null);
+                TextView cameraName = markerView.findViewById(R.id.camera_name);
+                cameraName.setText(deviceLamp.getNAME());
+                BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
+
+                MarkerOptions ooA = new MarkerOptions().position(ll).icon(bdA).zIndex(9);
+                Marker mMarker = (Marker) mBaiduMap.addOverlay(ooA);
+
+                // 把项目信息 和 Marker 绑定
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("deviceLamp", deviceLamp);
+                mMarker.setExtraInfo(bundle);
+
+                // 用于计算当前显示范围
+                builder.include(ll);
+
+            }
+            try {
+                LatLngBounds bounds = builder.build();
+            /*MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(bounds.getCenter()); // 设置显示在屏幕中的地图地理范围
+            mBaiduMap.animateMapStatus(u);*/
+                // 设置显示在屏幕中的地图地理范围
+                mBaiduMap.setMyLocationEnabled(true);
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(32));
+
             } catch (Exception e) {
                 System.out.println("空指针异常： ");
             }
@@ -264,7 +309,7 @@ public class BaiduMapActivity extends BaseActivity {
                         List<ProjectJson.DataBeanX.ProjectInfo> projectList = project.getData().getData();
 
                         // 初始化覆盖物位置
-                        initOverlay(projectList, HIERARCHY_PROJECT);
+                        initOverlay(projectList);
 
                     }
                 }, token, contentType, null);
@@ -307,19 +352,22 @@ public class BaiduMapActivity extends BaseActivity {
     /**
      * 获取设备下管理的所有路灯
      */
-    public void getDeviceLampList() {
+    public void getDeviceLampList(final String title) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-                String url = HttpConfiguration.PROJECT_LIST_URL;
+                String url = HttpConfiguration.DEVICE_LAMP_LIST_URL;
                 String token = loginJson.getData().getToken().getToken();
                 String contentType = HttpConfiguration.CONTENT_TYPE_DEVICE_LAMP_LIST;
 
                 // 创建请求的参数body
-                String postBody = "{\"where\":{\"PROJECT\":\"中科洛丁展示项目/深圳展厅\"},\"size\":5000}";
+                //   String postBody = "{\"where\":{\"PROJECT\":" + title + "},\"size\":5000}";
+                String postBody = "{\"where\":{\"PROJECT\":\"" + title + "\"},\"size\":5000}";
                 RequestBody body = FormBody.create(MediaType.parse("application/json"), postBody);
+
+                LogUtil.e("xxx postBody = " + postBody);
 
                 HttpUtil.sendHttpRequest(url, new Callback() {
 
@@ -338,11 +386,13 @@ public class BaiduMapActivity extends BaseActivity {
 
                         // 解析返回过来的json
                         Gson gson = new Gson();
-                        ProjectJson project = gson.fromJson(json, ProjectJson.class);
-                        List<ProjectJson.DataBeanX.ProjectInfo> projectList = project.getData().getData();
+                        DeviceLampJson deviceLampJson = gson.fromJson(json, DeviceLampJson.class);
+                        List<DeviceLampJson.DataBeanX.DeviceLamp> projectList = deviceLampJson.getData().getData();
+
+                        LogUtil.e(" List<DeviceLampJson.DataBeanX.DeviceLamp> projectList = ");
 
                         // 初始化覆盖物位置
-                        initOverlay(projectList, HIERARCHY_DEVICE_LAMP);
+                        initOverlay(projectList);
 
 
                     }
@@ -351,5 +401,15 @@ public class BaiduMapActivity extends BaseActivity {
 
             }
         }).start();
+    }
+
+
+    /**
+     * 清除所有Overlay
+     *
+     * @param view
+     */
+    public void clearOverlay(View view) {
+        mBaiduMap.clear();
     }
 }
