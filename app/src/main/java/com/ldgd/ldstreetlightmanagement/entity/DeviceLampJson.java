@@ -1,0 +1,498 @@
+package com.ldgd.ldstreetlightmanagement.entity;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * Created by ldgd on 2019/9/24.
+ * 功能：
+ * 说明：
+ */
+
+public class DeviceLampJson {
+
+
+    private int errno;
+    private String errmsg;
+    private DataBeanX data;
+
+    public int getErrno() {
+        return errno;
+    }
+
+    public void setErrno(int errno) {
+        this.errno = errno;
+    }
+
+    public String getErrmsg() {
+        return errmsg;
+    }
+
+    public void setErrmsg(String errmsg) {
+        this.errmsg = errmsg;
+    }
+
+    public DataBeanX getData() {
+        return data;
+    }
+
+    public void setData(DataBeanX data) {
+        this.data = data;
+    }
+
+    public static class DataBeanX {
+
+
+        private int count;
+        private int totalPages;
+        private int pageSize;
+        private int currentPage;
+        private List<DeviceLamp> data;
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public int getTotalPages() {
+            return totalPages;
+        }
+
+        public void setTotalPages(int totalPages) {
+            this.totalPages = totalPages;
+        }
+
+        public int getPageSize() {
+            return pageSize;
+        }
+
+        public void setPageSize(int pageSize) {
+            this.pageSize = pageSize;
+        }
+
+        public int getCurrentPage() {
+            return currentPage;
+        }
+
+        public void setCurrentPage(int currentPage) {
+            this.currentPage = currentPage;
+        }
+
+        public List<DeviceLamp> getData() {
+            return data;
+        }
+
+        public void setData(List<DeviceLamp> data) {
+            this.data = data;
+        }
+
+        public static class DeviceLamp implements Serializable {
+            /**
+             * UUID : 2016C0312000001200001192
+             * LAT : 22.635293
+             * LNG : 114.003836
+             * NAME : 测试灯1
+             * TYPE : 2
+             * PROJECT : 中科洛丁展示项目/深圳展厅
+             * SUBGROUP :
+             * _id : 5
+             * FUUID : 5,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99
+             * smsphone : 18033440703
+             * subgroups : ["1","2"]
+             * admin : ld
+             * FirDimming : 1299254
+             * SecDimming : 1299254
+             * Temp : 1299254
+             * Illu : 1299254
+             * _modified : 2019-09-18T08:40:46.397Z
+             * STATE : 1
+             * LampDiameter : 21cm
+             * Power_Manufacturer : 英飞特
+             * Lamp_RatedCurrent : 1025mA
+             * Lamp_Ratedvoltage : 125V
+             * lampType : LED
+             * Lamp_Manufacturer : 洛丁光电
+             * Lamp_Num : 1
+             * PoleProductionDate : 2015/2/12
+             * Pole_height : 2.8m
+             * Rated_power : 120
+             * Subcommunicate_mode : 以太网有线
+             * Current : 0
+             * Power : 0
+             * Leak_curt : 0
+             * Gprs_csq : 31
+             * Power_Factor : 0
+             * Energy : 0
+             * Voltage : 0
+             * RESET_COUNT : 3
+             * Version : 1.0.0|0-0-0
+             * Warning_state : 2
+             * Alarm_Light_Mode : OFF
+             */
+
+            private String UUID;
+            private String LAT;
+            private String LNG;
+            private String NAME;
+            private int TYPE;
+            private String PROJECT;
+            private String SUBGROUP;
+            private int _id;
+            private String FUUID;
+            private String smsphone;
+            private String subgroups;
+            private String admin;
+            private int FirDimming;
+            private int SecDimming;
+            private double Temp;
+            private int Illu;
+            private String _modified;
+            private int STATE;
+            private String LampDiameter;
+            private String Power_Manufacturer;
+            private String Lamp_RatedCurrent;
+            private String Lamp_Ratedvoltage;
+            private String lampType;
+            private String Lamp_Manufacturer;
+            private String Lamp_Num;
+            private String PoleProductionDate;
+            private String Pole_height;
+            private String Rated_power;
+            private String Subcommunicate_mode;
+            private int Current;
+            private int Power;
+            private int Leak_curt;
+            private int Gprs_csq;
+            private int Power_Factor;
+            private int Energy;
+            private int Voltage;
+            private int RESET_COUNT;
+            private String Version;
+            private int Warning_state;
+            private String Alarm_Light_Mode;
+
+            public String getUUID() {
+                return UUID;
+            }
+
+            public void setUUID(String UUID) {
+                this.UUID = UUID;
+            }
+
+            public String getLAT() {
+                return LAT;
+            }
+
+            public void setLAT(String LAT) {
+                this.LAT = LAT;
+            }
+
+            public String getLNG() {
+                return LNG;
+            }
+
+            public void setLNG(String LNG) {
+                this.LNG = LNG;
+            }
+
+            public String getNAME() {
+                return NAME;
+            }
+
+            public void setNAME(String NAME) {
+                this.NAME = NAME;
+            }
+
+            public int getTYPE() {
+                return TYPE;
+            }
+
+            public void setTYPE(int TYPE) {
+                this.TYPE = TYPE;
+            }
+
+            public String getPROJECT() {
+                return PROJECT;
+            }
+
+            public void setPROJECT(String PROJECT) {
+                this.PROJECT = PROJECT;
+            }
+
+            public String getSUBGROUP() {
+                return SUBGROUP;
+            }
+
+            public void setSUBGROUP(String SUBGROUP) {
+                this.SUBGROUP = SUBGROUP;
+            }
+
+            public int get_id() {
+                return _id;
+            }
+
+            public void set_id(int _id) {
+                this._id = _id;
+            }
+
+            public String getFUUID() {
+                return FUUID;
+            }
+
+            public void setFUUID(String FUUID) {
+                this.FUUID = FUUID;
+            }
+
+            public String getSmsphone() {
+                return smsphone;
+            }
+
+            public void setSmsphone(String smsphone) {
+                this.smsphone = smsphone;
+            }
+
+            public String getSubgroups() {
+                return subgroups;
+            }
+
+            public void setSubgroups(String subgroups) {
+                this.subgroups = subgroups;
+            }
+
+            public String getAdmin() {
+                return admin;
+            }
+
+            public void setAdmin(String admin) {
+                this.admin = admin;
+            }
+
+            public int getFirDimming() {
+                return FirDimming;
+            }
+
+            public void setFirDimming(int FirDimming) {
+                this.FirDimming = FirDimming;
+            }
+
+            public int getSecDimming() {
+                return SecDimming;
+            }
+
+            public void setSecDimming(int SecDimming) {
+                this.SecDimming = SecDimming;
+            }
+
+            public double getTemp() {
+                return Temp;
+            }
+
+            public void setTemp(double Temp) {
+                this.Temp = Temp;
+            }
+
+            public int getIllu() {
+                return Illu;
+            }
+
+            public void setIllu(int Illu) {
+                this.Illu = Illu;
+            }
+
+            public String get_modified() {
+                return _modified;
+            }
+
+            public void set_modified(String _modified) {
+                this._modified = _modified;
+            }
+
+            public int getSTATE() {
+                return STATE;
+            }
+
+            public void setSTATE(int STATE) {
+                this.STATE = STATE;
+            }
+
+            public String getLampDiameter() {
+                return LampDiameter;
+            }
+
+            public void setLampDiameter(String LampDiameter) {
+                this.LampDiameter = LampDiameter;
+            }
+
+            public String getPower_Manufacturer() {
+                return Power_Manufacturer;
+            }
+
+            public void setPower_Manufacturer(String Power_Manufacturer) {
+                this.Power_Manufacturer = Power_Manufacturer;
+            }
+
+            public String getLamp_RatedCurrent() {
+                return Lamp_RatedCurrent;
+            }
+
+            public void setLamp_RatedCurrent(String Lamp_RatedCurrent) {
+                this.Lamp_RatedCurrent = Lamp_RatedCurrent;
+            }
+
+            public String getLamp_Ratedvoltage() {
+                return Lamp_Ratedvoltage;
+            }
+
+            public void setLamp_Ratedvoltage(String Lamp_Ratedvoltage) {
+                this.Lamp_Ratedvoltage = Lamp_Ratedvoltage;
+            }
+
+            public String getLampType() {
+                return lampType;
+            }
+
+            public void setLampType(String lampType) {
+                this.lampType = lampType;
+            }
+
+            public String getLamp_Manufacturer() {
+                return Lamp_Manufacturer;
+            }
+
+            public void setLamp_Manufacturer(String Lamp_Manufacturer) {
+                this.Lamp_Manufacturer = Lamp_Manufacturer;
+            }
+
+            public String getLamp_Num() {
+                return Lamp_Num;
+            }
+
+            public void setLamp_Num(String Lamp_Num) {
+                this.Lamp_Num = Lamp_Num;
+            }
+
+            public String getPoleProductionDate() {
+                return PoleProductionDate;
+            }
+
+            public void setPoleProductionDate(String PoleProductionDate) {
+                this.PoleProductionDate = PoleProductionDate;
+            }
+
+            public String getPole_height() {
+                return Pole_height;
+            }
+
+            public void setPole_height(String Pole_height) {
+                this.Pole_height = Pole_height;
+            }
+
+            public String getRated_power() {
+                return Rated_power;
+            }
+
+            public void setRated_power(String Rated_power) {
+                this.Rated_power = Rated_power;
+            }
+
+            public String getSubcommunicate_mode() {
+                return Subcommunicate_mode;
+            }
+
+            public void setSubcommunicate_mode(String Subcommunicate_mode) {
+                this.Subcommunicate_mode = Subcommunicate_mode;
+            }
+
+            public int getCurrent() {
+                return Current;
+            }
+
+            public void setCurrent(int Current) {
+                this.Current = Current;
+            }
+
+            public int getPower() {
+                return Power;
+            }
+
+            public void setPower(int Power) {
+                this.Power = Power;
+            }
+
+            public int getLeak_curt() {
+                return Leak_curt;
+            }
+
+            public void setLeak_curt(int Leak_curt) {
+                this.Leak_curt = Leak_curt;
+            }
+
+            public int getGprs_csq() {
+                return Gprs_csq;
+            }
+
+            public void setGprs_csq(int Gprs_csq) {
+                this.Gprs_csq = Gprs_csq;
+            }
+
+            public int getPower_Factor() {
+                return Power_Factor;
+            }
+
+            public void setPower_Factor(int Power_Factor) {
+                this.Power_Factor = Power_Factor;
+            }
+
+            public int getEnergy() {
+                return Energy;
+            }
+
+            public void setEnergy(int Energy) {
+                this.Energy = Energy;
+            }
+
+            public int getVoltage() {
+                return Voltage;
+            }
+
+            public void setVoltage(int Voltage) {
+                this.Voltage = Voltage;
+            }
+
+            public int getRESET_COUNT() {
+                return RESET_COUNT;
+            }
+
+            public void setRESET_COUNT(int RESET_COUNT) {
+                this.RESET_COUNT = RESET_COUNT;
+            }
+
+            public String getVersion() {
+                return Version;
+            }
+
+            public void setVersion(String Version) {
+                this.Version = Version;
+            }
+
+            public int getWarning_state() {
+                return Warning_state;
+            }
+
+            public void setWarning_state(int Warning_state) {
+                this.Warning_state = Warning_state;
+            }
+
+            public String getAlarm_Light_Mode() {
+                return Alarm_Light_Mode;
+            }
+
+            public void setAlarm_Light_Mode(String Alarm_Light_Mode) {
+                this.Alarm_Light_Mode = Alarm_Light_Mode;
+            }
+        }
+    }
+}
