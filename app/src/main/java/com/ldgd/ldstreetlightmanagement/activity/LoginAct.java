@@ -169,7 +169,7 @@ public class LoginAct extends Activity {
                             showToast("解析异常");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            showToast("获取返回参数异常");
+                            showToast("获取异常错误 ：" + e.getMessage());
                         }
 
                     }

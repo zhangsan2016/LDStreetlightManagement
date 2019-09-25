@@ -4,6 +4,7 @@
 
 package com.baidu.mapapi.clusterutil.clustering.algo;
 
+
 import com.baidu.mapapi.clusterutil.clustering.Cluster;
 import com.baidu.mapapi.clusterutil.clustering.ClusterItem;
 import com.baidu.mapapi.clusterutil.projection.Bounds;
@@ -35,7 +36,7 @@ import java.util.Set;
  * Clusters have the center of the first element (not the centroid of the items within it).
  */
 public class NonHierarchicalDistanceBasedAlgorithm<T extends ClusterItem> implements Algorithm<T> {
-    public static final int MAX_DISTANCE_AT_ZOOM = 300; // essentially 100 dp.
+    public static final int MAX_DISTANCE_AT_ZOOM = 200; // essentially 100 dp.
 
     /**
      * Any modifications should be synchronized on mQuadTree.
@@ -93,8 +94,8 @@ public class NonHierarchicalDistanceBasedAlgorithm<T extends ClusterItem> implem
         final Set<QuadItem<T>> visitedCandidates = new HashSet<QuadItem<T>>();
         final Set<Cluster<T>> results = new HashSet<Cluster<T>>();
         final Map<QuadItem<T>, Double> distanceToCluster = new HashMap<QuadItem<T>, Double>();
-        final Map<QuadItem<T>, com.baidu.mapapi.clusterutil.clustering.algo.StaticCluster<T>> itemToCluster =
-                new HashMap<QuadItem<T>, com.baidu.mapapi.clusterutil.clustering.algo.StaticCluster<T>>();
+        final Map<QuadItem<T>, StaticCluster<T>> itemToCluster =
+                new HashMap<QuadItem<T>, StaticCluster<T>>();
 
         synchronized (mQuadTree) {
             for (QuadItem<T> candidate : mItems) {
@@ -114,9 +115,8 @@ public class NonHierarchicalDistanceBasedAlgorithm<T extends ClusterItem> implem
                     distanceToCluster.put(candidate, 0d);
                     continue;
                 }
-                com.baidu.mapapi.clusterutil.clustering.algo.StaticCluster<T> cluster =
-                        new com.baidu.mapapi.clusterutil.clustering.algo
-                                .StaticCluster<T>(candidate.mClusterItem.getPosition());
+                StaticCluster<T> cluster =
+                        new StaticCluster<T>(candidate.mClusterItem.getPosition());
                 results.add(cluster);
 
                 for (QuadItem<T> clusterItem : clusterItems) {

@@ -43,41 +43,41 @@ public class DeviceLampJson {
     public static class DataBeanX {
 
 
-        private int count;
-        private int totalPages;
-        private int pageSize;
-        private int currentPage;
+        private double count;
+        private double totalPages;
+        private double pageSize;
+        private double currentPage;
         private List<DeviceLamp> data;
 
-        public int getCount() {
+        public double getCount() {
             return count;
         }
 
-        public void setCount(int count) {
+        public void setCount(double count) {
             this.count = count;
         }
 
-        public int getTotalPages() {
+        public double getTotalPages() {
             return totalPages;
         }
 
-        public void setTotalPages(int totalPages) {
+        public void setTotalPages(double totalPages) {
             this.totalPages = totalPages;
         }
 
-        public int getPageSize() {
+        public double getPageSize() {
             return pageSize;
         }
 
-        public void setPageSize(int pageSize) {
+        public void setPageSize(double pageSize) {
             this.pageSize = pageSize;
         }
 
-        public int getCurrentPage() {
+        public double getCurrentPage() {
             return currentPage;
         }
 
-        public void setCurrentPage(int currentPage) {
+        public void setCurrentPage(double currentPage) {
             this.currentPage = currentPage;
         }
 
@@ -137,20 +137,20 @@ public class DeviceLampJson {
             private String LAT;
             private String LNG;
             private String NAME;
-            private int TYPE;
+            private double TYPE;
             private String PROJECT;
             private String SUBGROUP;
-            private int _id;
+            private double _id;
             private String FUUID;
             private String smsphone;
             private String subgroups;
             private String admin;
-            private int FirDimming;
-            private int SecDimming;
+            private double FirDimming;
+            private double SecDimming;
             private double Temp;
-            private int Illu;
+            private double Illu;
             private String _modified;
-            private int STATE;
+            private double STATE;
             private String LampDiameter;
             private String Power_Manufacturer;
             private String Lamp_RatedCurrent;
@@ -162,16 +162,16 @@ public class DeviceLampJson {
             private String Pole_height;
             private String Rated_power;
             private String Subcommunicate_mode;
-            private int Current;
-            private int Power;
-            private int Leak_curt;
-            private int Gprs_csq;
-            private int Power_Factor;
-            private int Energy;
-            private int Voltage;
-            private int RESET_COUNT;
+            private double Current;
+            private double Power;
+            private double Leak_curt;
+            private double Gprs_csq;
+            private double Power_Factor;
+            private double Energy;
+            private double Voltage;
+            private double RESET_COUNT;
             private String Version;
-            private int Warning_state;
+            private double Warning_state;
             private String Alarm_Light_Mode;
 
             public String getUUID() {
@@ -206,11 +206,11 @@ public class DeviceLampJson {
                 this.NAME = NAME;
             }
 
-            public int getTYPE() {
+            public double getTYPE() {
                 return TYPE;
             }
 
-            public void setTYPE(int TYPE) {
+            public void setTYPE(double TYPE) {
                 this.TYPE = TYPE;
             }
 
@@ -230,11 +230,11 @@ public class DeviceLampJson {
                 this.SUBGROUP = SUBGROUP;
             }
 
-            public int get_id() {
+            public double get_id() {
                 return _id;
             }
 
-            public void set_id(int _id) {
+            public void set_id(double _id) {
                 this._id = _id;
             }
 
@@ -270,19 +270,19 @@ public class DeviceLampJson {
                 this.admin = admin;
             }
 
-            public int getFirDimming() {
+            public double getFirDimming() {
                 return FirDimming;
             }
 
-            public void setFirDimming(int FirDimming) {
+            public void setFirDimming(double FirDimming) {
                 this.FirDimming = FirDimming;
             }
 
-            public int getSecDimming() {
+            public double getSecDimming() {
                 return SecDimming;
             }
 
-            public void setSecDimming(int SecDimming) {
+            public void setSecDimming(double SecDimming) {
                 this.SecDimming = SecDimming;
             }
 
@@ -294,11 +294,11 @@ public class DeviceLampJson {
                 this.Temp = Temp;
             }
 
-            public int getIllu() {
+            public double getIllu() {
                 return Illu;
             }
 
-            public void setIllu(int Illu) {
+            public void setIllu(double Illu) {
                 this.Illu = Illu;
             }
 
@@ -310,11 +310,11 @@ public class DeviceLampJson {
                 this._modified = _modified;
             }
 
-            public int getSTATE() {
+            public double getSTATE() {
                 return STATE;
             }
 
-            public void setSTATE(int STATE) {
+            public void setSTATE(double STATE) {
                 this.STATE = STATE;
             }
 
@@ -406,67 +406,67 @@ public class DeviceLampJson {
                 this.Subcommunicate_mode = Subcommunicate_mode;
             }
 
-            public int getCurrent() {
+            public double getCurrent() {
                 return Current;
             }
 
-            public void setCurrent(int Current) {
+            public void setCurrent(double Current) {
                 this.Current = Current;
             }
 
-            public int getPower() {
+            public double getPower() {
                 return Power;
             }
 
-            public void setPower(int Power) {
+            public void setPower(double Power) {
                 this.Power = Power;
             }
 
-            public int getLeak_curt() {
+            public double getLeak_curt() {
                 return Leak_curt;
             }
 
-            public void setLeak_curt(int Leak_curt) {
+            public void setLeak_curt(double Leak_curt) {
                 this.Leak_curt = Leak_curt;
             }
 
-            public int getGprs_csq() {
+            public double getGprs_csq() {
                 return Gprs_csq;
             }
 
-            public void setGprs_csq(int Gprs_csq) {
+            public void setGprs_csq(double Gprs_csq) {
                 this.Gprs_csq = Gprs_csq;
             }
 
-            public int getPower_Factor() {
+            public double getPower_Factor() {
                 return Power_Factor;
             }
 
-            public void setPower_Factor(int Power_Factor) {
+            public void setPower_Factor(double Power_Factor) {
                 this.Power_Factor = Power_Factor;
             }
 
-            public int getEnergy() {
+            public double getEnergy() {
                 return Energy;
             }
 
-            public void setEnergy(int Energy) {
+            public void setEnergy(double Energy) {
                 this.Energy = Energy;
             }
 
-            public int getVoltage() {
+            public double getVoltage() {
                 return Voltage;
             }
 
-            public void setVoltage(int Voltage) {
+            public void setVoltage(double Voltage) {
                 this.Voltage = Voltage;
             }
 
-            public int getRESET_COUNT() {
+            public double getRESET_COUNT() {
                 return RESET_COUNT;
             }
 
-            public void setRESET_COUNT(int RESET_COUNT) {
+            public void setRESET_COUNT(double RESET_COUNT) {
                 this.RESET_COUNT = RESET_COUNT;
             }
 
@@ -478,11 +478,11 @@ public class DeviceLampJson {
                 this.Version = Version;
             }
 
-            public int getWarning_state() {
+            public double getWarning_state() {
                 return Warning_state;
             }
 
-            public void setWarning_state(int Warning_state) {
+            public void setWarning_state(double Warning_state) {
                 this.Warning_state = Warning_state;
             }
 

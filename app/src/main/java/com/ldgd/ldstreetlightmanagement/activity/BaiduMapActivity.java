@@ -2,21 +2,19 @@ package com.ldgd.ldstreetlightmanagement.activity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
+import com.baidu.mapapi.clusterutil.clustering.Cluster;
+import com.baidu.mapapi.clusterutil.clustering.ClusterItem;
+import com.baidu.mapapi.clusterutil.clustering.ClusterManager;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.Marker;
-import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
 import com.google.gson.Gson;
@@ -33,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -50,6 +49,9 @@ public class BaiduMapActivity extends BaseActivity {
     private LoginJson loginJson;
 
 
+    private ClusterManager<MyItem> mClusterManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +62,6 @@ public class BaiduMapActivity extends BaseActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_baidu_map);
-
 
         // 获取传递过来的参数
         getData();
@@ -98,51 +99,94 @@ public class BaiduMapActivity extends BaseActivity {
         MapView.setMapCustomEnable(true);
         //获取地图控件引用
         mMapView = (MapView) findViewById(R.id.bmapView);
+        // 百度地图LoGo -> 正式版切记不能这么做，本人只是觉得logo丑了
+        mMapView.removeViewAt(1);
+        // 比例尺控件
+        mMapView.showScaleControl(true);
         mBaiduMap = mMapView.getMap();
         //是否显示缩小放大按钮// 设置地图监听，当地图状态发生改变时，进行点聚合运算
         mMapView.showZoomControls(false);
+        //不倾斜
+        mBaiduMap.getUiSettings().setOverlookingGesturesEnabled(false);
+        //不旋转
+        mBaiduMap.getUiSettings().setRotateGesturesEnabled(false);
 
-        // 设置覆盖物点击事件
-        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+
+        // 初始化聚合地图
+        initClusterMap();
+
+
+    }
+
+    /**
+     * 初始化聚合地图
+     */
+    private void initClusterMap() {
+
+        // 定义点聚合管理类ClusterManager
+        mClusterManager = new ClusterManager<MyItem>(this, mBaiduMap);
+        // 设置地图监听，当地图状态发生改变时，进行点聚合运算
+        mBaiduMap.setOnMapStatusChangeListener(mClusterManager);
+        // 设置maker点击时的响应
+        mBaiduMap.setOnMarkerClickListener(mClusterManager);
+
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MyItem>() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-
-                ProjectJson.DataBeanX.ProjectInfo projectInfo = (ProjectJson.DataBeanX.ProjectInfo) marker.getExtraInfo().getSerializable("projectInfo");
-                DeviceLampJson.DataBeanX.DeviceLamp deviceLamp = (DeviceLampJson.DataBeanX.DeviceLamp) marker.getExtraInfo().getSerializable("deviceLamp");
-
-
-                if (projectInfo != null) {
-                    LogUtil.e("xxx" + projectInfo.toString());
-                    // 获取当前项目下的所有路灯
-                    getDeviceLampList(projectInfo.getTitle());
-
-                } else if (deviceLamp != null) {
-                    InfoWindow mInfoWindow;
-                    LatLng position = marker.getPosition();
-                    final double latitude = position.latitude;
-                    final double longitude = position.longitude;
-                    // showToast("latitude" + latitude + "\n  " + "longitude" +
-                    // longitude );
-
-                    // 将marker所在的经纬度的信息转化成屏幕上的坐标
-                    Point p = mBaiduMap.getProjection().toScreenLocation(
-                            position);
-                    p.y -= 30;
-                    LatLng llInfo = mBaiduMap.getProjection()
-                            .fromScreenLocation(p);
-                    View location = View.inflate(BaiduMapActivity.this,
-                            R.layout.baidu_map_marker_info_item, null);
-                    mInfoWindow = new InfoWindow(location, llInfo, 0);
-                    // 显示InfoWindow
-                    mBaiduMap.showInfoWindow(mInfoWindow);
-                }
-
+            public boolean onClusterClick(Cluster<MyItem> cluster) {
+                showToast("有" + cluster.getSize() + "个点");
+                ClusterOnClick(cluster);
+                return false;
+            }
+        });
+        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
+            @Override
+            public boolean onClusterItemClick(MyItem item) {
+                showToast("点击单个Item");
 
                 return false;
             }
         });
 
+    }
 
+    /**
+     * 聚合点击
+     */
+    private void ClusterOnClick(Cluster<MyItem> clusterBaiduItems) {
+        if (mBaiduMap == null) {
+            return;
+        }
+        if (clusterBaiduItems.getItems().size() > 0) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (MyItem clusterBaiduItem : clusterBaiduItems.getItems()) {
+                builder.include(clusterBaiduItem.getPosition());
+            }
+            mBaiduMap.animateMapStatus(MapStatusUpdateFactory
+                    .newLatLngBounds(builder.build()));
+        }
+    }
+
+    /**
+     * 每个Marker点，包含Marker点坐标以及图标
+     */
+    public class MyItem implements ClusterItem {
+        private final LatLng mPosition;
+
+        public MyItem(LatLng latLng) {
+            mPosition = latLng;
+        }
+
+        @Override
+        public LatLng getPosition() {
+            return mPosition;
+        }
+
+        @Override
+        public BitmapDescriptor getBitmapDescriptor() {
+
+            return BitmapDescriptorFactory
+                    .fromResource(R.drawable.icon_gcoding);
+        }
     }
 
     /**
@@ -185,98 +229,6 @@ public class BaiduMapActivity extends BaseActivity {
     }
 
 
-    /**
-     * 添加覆盖物
-     *
-     * @param list 项目列表
-     *             层级 ：项目 - 路灯
-     */
-    public void initOverlay(List list) {
-
-        clearOverlay(null);
-
-        if (list.get(0) instanceof ProjectJson.DataBeanX.ProjectInfo) {
-            List<ProjectJson.DataBeanX.ProjectInfo> projectList = list;
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (ProjectJson.DataBeanX.ProjectInfo projectInfo : projectList) {
-                // add marker overlay
-                LatLng ll = new LatLng(Double.parseDouble(projectInfo.getLat()), Double.parseDouble(projectInfo.getLng()));
-
-                View markerView = View.inflate(this, R.layout.map_marker_item, null);
-                TextView cameraName = markerView.findViewById(R.id.camera_name);
-                cameraName.setText(projectInfo.getTitle());
-                BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
-
-                MarkerOptions ooA = new MarkerOptions().position(ll).icon(bdA).zIndex(9);
-                Marker mMarker = (Marker) mBaiduMap.addOverlay(ooA);
-
-                // 把项目信息 和 Marker 绑定
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("projectInfo", projectInfo);
-                mMarker.setExtraInfo(bundle);
-
-                // 用于计算当前显示范围
-                builder.include(ll);
-
-            }
-            try {
-                LatLngBounds bounds = builder.build();
-            /*MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(bounds.getCenter()); // 设置显示在屏幕中的地图地理范围
-            mBaiduMap.animateMapStatus(u);*/
-                // 设置显示在屏幕中的地图地理范围
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(16));
-            } catch (Exception e) {
-                System.out.println("空指针异常： ");
-            }
-
-        } else if (list.get(0) instanceof DeviceLampJson.DataBeanX.DeviceLamp) {
-
-            List<DeviceLampJson.DataBeanX.DeviceLamp> deviceLamps = list;
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (DeviceLampJson.DataBeanX.DeviceLamp deviceLamp : deviceLamps) {
-
-                if (deviceLamp.getLAT().equals("") || deviceLamp.getLNG().equals("")) {
-                    return;
-                }
-
-                // add marker overlay
-                LatLng ll = new LatLng(Double.parseDouble(deviceLamp.getLAT()), Double.parseDouble(deviceLamp.getLNG()));
-
-                View markerView = View.inflate(this, R.layout.map_marker_item, null);
-                TextView cameraName = markerView.findViewById(R.id.camera_name);
-                cameraName.setText(deviceLamp.getNAME());
-                BitmapDescriptor bdA = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
-
-                MarkerOptions ooA = new MarkerOptions().position(ll).icon(bdA).zIndex(9);
-                Marker mMarker = (Marker) mBaiduMap.addOverlay(ooA);
-
-                // 把项目信息 和 Marker 绑定
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("deviceLamp", deviceLamp);
-                mMarker.setExtraInfo(bundle);
-
-                // 用于计算当前显示范围
-                builder.include(ll);
-
-            }
-            try {
-                LatLngBounds bounds = builder.build();
-            /*MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(bounds.getCenter()); // 设置显示在屏幕中的地图地理范围
-            mBaiduMap.animateMapStatus(u);*/
-                // 设置显示在屏幕中的地图地理范围
-                mBaiduMap.setMyLocationEnabled(true);
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(32));
-
-            } catch (Exception e) {
-                System.out.println("空指针异常： ");
-            }
-        }
-
-
-    }
-
 
     /**
      * 获取项目列表
@@ -311,8 +263,22 @@ public class BaiduMapActivity extends BaseActivity {
                         ProjectJson project = gson.fromJson(json, ProjectJson.class);
                         List<ProjectJson.DataBeanX.ProjectInfo> projectList = project.getData().getData();
 
-                        // 初始化覆盖物位置
-                        initOverlay(projectList);
+
+                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                        for (ProjectJson.DataBeanX.ProjectInfo projectInfo : projectList) {
+                            // 用于计算当前显示范围
+                            LatLng ll = new LatLng(Double.parseDouble(projectInfo.getLat()), Double.parseDouble(projectInfo.getLng()));
+                            builder.include(ll);
+                            // 获取当前项目下的所有路灯
+                            getDeviceLampList(projectInfo.getTitle());
+                        }
+
+                        LatLngBounds bounds = builder.build();
+                        // 设置显示在屏幕中的地图地理范围
+                        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
+                        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(6));
+
+
 
                     }
                 }, token, contentType, null);
@@ -323,26 +289,6 @@ public class BaiduMapActivity extends BaseActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        mMapView.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        mMapView.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理
-        mMapView.onDestroy();
-    }
 
     public void getData() {
         loginJson = (LoginJson) getIntent().getSerializableExtra("loginInfo");
@@ -356,6 +302,7 @@ public class BaiduMapActivity extends BaseActivity {
      * 获取设备下管理的所有路灯
      */
     public void getDeviceLampList(final String title) {
+
 
         new Thread(new Runnable() {
             @Override
@@ -392,18 +339,28 @@ public class BaiduMapActivity extends BaseActivity {
                         DeviceLampJson deviceLampJson = gson.fromJson(json, DeviceLampJson.class);
                         List<DeviceLampJson.DataBeanX.DeviceLamp> projectList = deviceLampJson.getData().getData();
 
-                        LogUtil.e(" List<DeviceLampJson.DataBeanX.DeviceLamp> projectList = ");
+                        List<MyItem> items = new ArrayList<MyItem>();
+                        for (DeviceLampJson.DataBeanX.DeviceLamp deviceLamp : projectList) {
 
-                        // 初始化覆盖物位置
-                        initOverlay(projectList);
+                            if (deviceLamp.getLAT().equals("") || deviceLamp.getLNG().equals("")) {
+                                break;
+                            }
 
+                            LatLng ll = new LatLng(Double.parseDouble(deviceLamp.getLAT()), Double.parseDouble(deviceLamp.getLNG()));
+                            items.add(new MyItem(ll));
+
+                        }
+                        mClusterManager.addItems(items);
+                        //更新页面
+                        if (mClusterManager != null)
+                            mClusterManager.cluster();
 
                     }
                 }, token, contentType, body);
-
-
             }
         }).start();
+
+
     }
 
 
@@ -414,5 +371,28 @@ public class BaiduMapActivity extends BaseActivity {
      */
     public void clearOverlay(View view) {
         mBaiduMap.clear();
+    }
+
+
+    @Override
+    protected void onPause() {
+        mMapView.onPause();
+        super.onPause();
+        LogUtil.e("baidumap = onPause"  );
+    }
+
+    @Override
+    protected void onResume() {
+        mMapView.onResume();
+        super.onResume();
+        LogUtil.e("baidumap = onResume"  );
+    }
+
+    @Override
+    protected void onDestroy() {
+        LogUtil.e("baidumap = onDestroy"  );
+        mMapView = null;
+        super.onDestroy();
+
     }
 }

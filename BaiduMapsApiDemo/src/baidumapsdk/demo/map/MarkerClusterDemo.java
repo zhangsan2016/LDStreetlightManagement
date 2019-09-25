@@ -5,6 +5,7 @@ package baidumapsdk.demo.map;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.baidu.mapapi.clusterutil.clustering.Cluster;
 import com.baidu.mapapi.clusterutil.clustering.ClusterItem;
@@ -21,7 +22,6 @@ import com.baidu.mapapi.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.widget.Toast;
 import baidumapsdk.demo.R;
 
 /**
@@ -111,6 +111,21 @@ public class MarkerClusterDemo extends Activity implements OnMapLoadedCallback {
         items.add(new MyItem(llE));
         items.add(new MyItem(llF));
         items.add(new MyItem(llG));
+
+        List<MyItem> items2 = new ArrayList<MyItem>();
+        LatLng ll1 = new LatLng(22.59638, 116.411394);
+        LatLng ll2 = new LatLng(22.581431,114.04539);
+        LatLng ll3 = new LatLng(22.56381,114.067812);
+        LatLng ll4 = new LatLng(22.567014,114.01492);
+        LatLng ll5 = new LatLng(22.599583,114.075286);
+        LatLng ll6 = new LatLng(22.587304,114.071836);
+        items2.add(new MyItem(ll1));
+        items2.add(new MyItem(ll2));
+        items2.add(new MyItem(ll3));
+        items2.add(new MyItem(ll4));
+        items2.add(new MyItem(ll5));
+        items2.add(new MyItem(ll6));
+        mClusterManager.addItems(items2);
 
         mClusterManager.addItems(items);
 
