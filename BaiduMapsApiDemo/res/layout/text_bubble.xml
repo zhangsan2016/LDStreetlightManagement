@@ -10,6 +10,8 @@
     <com.baidu.mapapi.clusterutil.ui.RotationLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#FF4040"
+        android:visibility="gone"
         android:orientation="vertical">
 
         <TextView
@@ -23,5 +25,10 @@
             android:paddingTop="5dp"/>
 
     </com.baidu.mapapi.clusterutil.ui.RotationLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher"/>
 
 </LinearLayout>

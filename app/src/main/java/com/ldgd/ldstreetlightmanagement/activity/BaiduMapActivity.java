@@ -93,11 +93,14 @@ public class BaiduMapActivity extends BaseActivity {
 
 
     private void initBaiduMap() {
+
         //开启个性化地图
         MapView.setMapCustomEnable(true);
         //获取地图控件引用
         mMapView = (MapView) findViewById(R.id.bmapView);
         mBaiduMap = mMapView.getMap();
+        //是否显示缩小放大按钮// 设置地图监听，当地图状态发生改变时，进行点聚合运算
+        mMapView.showZoomControls(false);
 
         // 设置覆盖物点击事件
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {

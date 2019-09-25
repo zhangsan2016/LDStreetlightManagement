@@ -5,6 +5,7 @@ package baidumapsdk.demo.map;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.baidu.mapapi.clusterutil.clustering.Cluster;
 import com.baidu.mapapi.clusterutil.clustering.ClusterItem;
@@ -21,7 +22,6 @@ import com.baidu.mapapi.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.widget.Toast;
 import baidumapsdk.demo.R;
 
 /**
@@ -39,10 +39,12 @@ public class MarkerClusterDemo extends Activity implements OnMapLoadedCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marker_cluster_demo);
         mMapView = (MapView) findViewById(R.id.bmapView);
-        ms = new MapStatus.Builder().target(new LatLng(39.914935, 116.403119)).zoom(8).build();
+        ms = new MapStatus.Builder().target(new LatLng(22.635641, 114.004099)).zoom(8).build();
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setOnMapLoadedCallback(this);
         mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
+
+
         // 定义点聚合管理类ClusterManager
         mClusterManager = new ClusterManager<MyItem>(this, mBaiduMap);
         // 添加Marker点
@@ -134,7 +136,7 @@ public class MarkerClusterDemo extends Activity implements OnMapLoadedCallback {
         @Override
         public BitmapDescriptor getBitmapDescriptor() {
             return BitmapDescriptorFactory
-                    .fromResource(R.drawable.icon_gcoding);
+                    .fromResource(R.drawable.icon_geo);
         }
     }
 

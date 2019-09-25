@@ -56,7 +56,7 @@ android {
         release.setRoot('build-types/release')
     }
     defaultConfig {
-        applicationId "baidumapsdk.demo"
+        applicationId "com.ldgd.ldstreetlightmanagement"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1

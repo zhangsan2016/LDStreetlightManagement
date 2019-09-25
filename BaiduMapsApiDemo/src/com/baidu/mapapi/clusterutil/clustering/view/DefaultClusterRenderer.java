@@ -71,8 +71,8 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements
     private final float mDensity;
 
     private static final int[] BUCKETS = {10, 20, 50, 100, 200, 500, 1000};
+    private final Context mContext;
     private ShapeDrawable mColoredCircleBackground;
-
     /**
      * Markers that are currently on the map.
      */
@@ -118,6 +118,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements
     private ClusterManager.OnClusterItemInfoWindowClickListener<T> mItemInfoWindowClickListener;
 
     public DefaultClusterRenderer(Context context, BaiduMap map, ClusterManager<T> clusterManager) {
+        mContext = context;
         mMap = map;
         mDensity = context.getResources().getDisplayMetrics().density;
         mIconGenerator = new IconGenerator(context);
@@ -153,12 +154,27 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements
     }
 
     private LayerDrawable makeClusterBackground() {
+
         mColoredCircleBackground = new ShapeDrawable(new OvalShape());
         ShapeDrawable outline = new ShapeDrawable(new OvalShape());
         outline.getPaint().setColor(0x80ffffff); // Transparent white.
         LayerDrawable background = new LayerDrawable(new Drawable[]{outline, mColoredCircleBackground});
         int strokeWidth = (int) (mDensity * 3);
         background.setLayerInset(1, strokeWidth, strokeWidth, strokeWidth, strokeWidth);
+
+     /*   //读取聚合图标
+        InputStream inputStream;
+   //     inputStream = mContext.getResources().getDrawable(R.drawable.ic_launcher);
+        inputStream = mContext.getResources().openRawResource(R.raw.ic_launcher);
+        BitmapDrawable drawable = new BitmapDrawable(inputStream);
+        mColoredCircleBackground = drawable;
+        //将外部的圈圈去掉
+        ShapeDrawable outline = new ShapeDrawable(new RoundRectShape(null, null, null));
+        outline.getPaint().setColor(0x00000000);
+        LayerDrawable background = new LayerDrawable(new Drawable[]{outline, mColoredCircleBackground});
+        //修改padding
+        int strokeWidth = (int) (mDensity * 3);
+        background.setLayerInset(1, strokeWidth, strokeWidth, strokeWidth, strokeWidth);*/
         return background;
     }
 
@@ -433,7 +449,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements
 
     @Override
     public void setOnClusterInfoWindowClickListener(ClusterManager
-                                                                .OnClusterInfoWindowClickListener<T> listener) {
+                                                            .OnClusterInfoWindowClickListener<T> listener) {
         mInfoWindowClickListener = listener;
     }
 
@@ -444,7 +460,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements
 
     @Override
     public void setOnClusterItemInfoWindowClickListener(ClusterManager
-                                                                    .OnClusterItemInfoWindowClickListener<T> listener) {
+                                                                .OnClusterItemInfoWindowClickListener<T> listener) {
         mItemInfoWindowClickListener = listener;
     }
 
@@ -626,7 +642,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements
                 lock.lock();
                 return !(mCreateMarkerTasks.isEmpty() && mOnScreenCreateMarkerTasks.isEmpty()
                         && mOnScreenRemoveMarkerTasks.isEmpty() && mRemoveMarkerTasks.isEmpty()
-                                && mAnimationTasks.isEmpty());
+                        && mAnimationTasks.isEmpty());
             } finally {
                 lock.unlock();
             }
