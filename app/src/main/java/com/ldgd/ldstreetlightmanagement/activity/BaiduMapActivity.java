@@ -2,10 +2,12 @@ package com.ldgd.ldstreetlightmanagement.activity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.baidu.mapapi.clusterutil.clustering.Cluster;
 import com.baidu.mapapi.clusterutil.clustering.ClusterItem;
@@ -13,6 +15,8 @@ import com.baidu.mapapi.clusterutil.clustering.ClusterManager;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
@@ -62,6 +66,7 @@ public class BaiduMapActivity extends BaseActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_baidu_map);
+
 
         // 获取传递过来的参数
         getData();
@@ -129,19 +134,62 @@ public class BaiduMapActivity extends BaseActivity {
         mBaiduMap.setOnMapStatusChangeListener(mClusterManager);
         // 设置maker点击时的响应
         mBaiduMap.setOnMarkerClickListener(mClusterManager);
+        // 设置地图允许的最小/大级别
+        //   mBaiduMap.setMaxAndMinZoomLevel(4,16);
+        // 设置地图的可动范围
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(new LatLng(43.56912, 101.123014));
+        builder.include(new LatLng(20.226576, 115.767262));
+        mBaiduMap.setMapStatusLimits(builder.build());
+
+
+        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                mBaiduMap.hideInfoWindow();
+            }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+                return false;
+            }
+        });
 
         mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MyItem>() {
             @Override
             public boolean onClusterClick(Cluster<MyItem> cluster) {
-                showToast("有" + cluster.getSize() + "个点");
+                // showToast("有" + cluster.getSize() + "个点");
                 ClusterOnClick(cluster);
                 return false;
             }
         });
         mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
             @Override
-            public boolean onClusterItemClick(MyItem item) {
-                showToast("点击单个Item");
+            public boolean onClusterItemClick(MyItem marker) {
+                // showToast("点击单个Item");
+
+
+
+               DeviceLampJson.DataBeanX.DeviceLamp deviceLamp = marker.getDeviceLamp();
+
+                InfoWindow mInfoWindow;
+                LatLng position = marker.getPosition();
+                final double latitude = position.latitude;
+                final double longitude = position.longitude;
+                // showToast("latitude" + latitude + "\n  " + "longitude" +
+                // longitude );
+
+                // 将marker所在的经纬度的信息转化成屏幕上的坐标
+                Point p = mBaiduMap.getProjection().toScreenLocation(
+                        position);
+                p.y -= 120;
+                LatLng llInfo = mBaiduMap.getProjection()
+                        .fromScreenLocation(p);
+                View location = View.inflate(BaiduMapActivity.this,
+                        R.layout.baidu_map_marker_info_item, null);
+                mInfoWindow = new InfoWindow(location, llInfo, 0);
+                // 显示InfoWindow
+                mBaiduMap.showInfoWindow(mInfoWindow);
 
                 return false;
             }
@@ -171,9 +219,18 @@ public class BaiduMapActivity extends BaseActivity {
      */
     public class MyItem implements ClusterItem {
         private final LatLng mPosition;
+        private DeviceLampJson.DataBeanX.DeviceLamp deviceLamp;
 
-        public MyItem(LatLng latLng) {
+        public DeviceLampJson.DataBeanX.DeviceLamp getDeviceLamp() {
+            return deviceLamp;
+        }
+
+        /*    public MyItem(LatLng latLng) {
+                        mPosition = latLng;
+                    }*/
+        public MyItem(LatLng latLng, DeviceLampJson.DataBeanX.DeviceLamp deviceLamp) {
             mPosition = latLng;
+            this.deviceLamp = deviceLamp;
         }
 
         @Override
@@ -184,8 +241,15 @@ public class BaiduMapActivity extends BaseActivity {
         @Override
         public BitmapDescriptor getBitmapDescriptor() {
 
-            return BitmapDescriptorFactory
-                    .fromResource(R.drawable.icon_gcoding);
+
+            View markerView = View.inflate(BaiduMapActivity.this, R.layout.map_marker_item, null);
+            TextView cameraName = markerView.findViewById(R.id.camera_name);
+            cameraName.setText(deviceLamp.getNAME());
+            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(getViewBitmap(markerView));
+            return bitmapDescriptor;
+
+            //   return BitmapDescriptorFactory.fromResource(R.drawable.icon_gcoding);
+
         }
     }
 
@@ -227,7 +291,6 @@ public class BaiduMapActivity extends BaseActivity {
         //设置自定义样式文件
         MapView.setCustomMapStylePath(moduleName + "/" + fileName);
     }
-
 
 
     /**
@@ -277,7 +340,6 @@ public class BaiduMapActivity extends BaseActivity {
                         // 设置显示在屏幕中的地图地理范围
                         mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLngBounds(bounds));
                         mBaiduMap.animateMapStatus(MapStatusUpdateFactory.zoomTo(6));
-
 
 
                     }
@@ -347,7 +409,7 @@ public class BaiduMapActivity extends BaseActivity {
                             }
 
                             LatLng ll = new LatLng(Double.parseDouble(deviceLamp.getLAT()), Double.parseDouble(deviceLamp.getLNG()));
-                            items.add(new MyItem(ll));
+                            items.add(new MyItem(ll, deviceLamp));
 
                         }
                         mClusterManager.addItems(items);
@@ -378,19 +440,22 @@ public class BaiduMapActivity extends BaseActivity {
     protected void onPause() {
         mMapView.onPause();
         super.onPause();
-        LogUtil.e("baidumap = onPause"  );
+        LogUtil.e("baidumap = onPause");
     }
 
     @Override
     protected void onResume() {
         mMapView.onResume();
         super.onResume();
-        LogUtil.e("baidumap = onResume"  );
+        LogUtil.e("baidumap = onResume");
     }
 
     @Override
     protected void onDestroy() {
-        LogUtil.e("baidumap = onDestroy"  );
+        LogUtil.e("baidumap = onDestroy");
+      /*  mBaiduMap.clear();
+        mClusterManager.clearItems();
+        mMapView.onDestroy();*/
         mMapView = null;
         super.onDestroy();
 

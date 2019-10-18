@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="#ffffff"
-        android:textSize="15sp" />
+        android:textSize="8sp" />
 
 
     <ImageView
